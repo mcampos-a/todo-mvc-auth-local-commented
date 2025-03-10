@@ -3,6 +3,7 @@ const validator = require('validator')
 const User = require('../models/User')
 
  exports.getLogin = (req, res) => {
+   
     if (req.user) {
       return res.redirect('/todos')
     }
@@ -20,7 +21,7 @@ const User = require('../models/User')
       req.flash('errors', validationErrors)
       return res.redirect('/login')
     }
-    req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false })
+    req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false }) //validate email address
   
     passport.authenticate('local', (err, user, info) => {
       if (err) { return next(err) }
@@ -30,16 +31,17 @@ const User = require('../models/User')
       }
       req.logIn(user, (err) => {
         if (err) { return next(err) }
-        req.flash('success', { msg: 'Success! You are logged in.' })
+        req.flash('success', { msg: 'Success! You are logged in.' }) //we do not see the flash msg. Possible place to improve.
         res.redirect(req.session.returnTo || '/todos')
       })
-    })(req, res, next)
+    })(req, res, next) // this part is passed to the method .authenticate of passport to process the user 
   }
   
   exports.logout = (req, res) => {
     req.logout(() => {
       console.log('User has logged out.')
     })
+    
     req.session.destroy((err) => {
       if (err) console.log('Error : Failed to destroy the session during logout.', err)
       req.user = null
@@ -68,9 +70,9 @@ const User = require('../models/User')
     }
     req.body.email = validator.normalizeEmail(req.body.email, { gmail_remove_dots: false })
   
-    const user = new User({
-      userName: req.body.userName,
-      email: req.body.email,
+    const user = new User({ //create a new object, note we changed the user name to lower case to avoid capitalziation confilcts with exisiting user
+      userName: req.body.userName.toLowerCase(),
+      email: req.body.email.toLowerCase(), //used .toLowerCase to avoid email capitalization duplicate conflict. 
       password: req.body.password
     })
   
@@ -80,10 +82,10 @@ const User = require('../models/User')
     ]}, (err, existingUser) => {
       if (err) { return next(err) }
       if (existingUser) {
-        req.flash('errors', { msg: 'Account with that email address or username already exists.' })
+        req.flash('errors', { msg: 'Account with that email address or username already exists.' }) //no flash msg output/shown
         return res.redirect('../signup')
       }
-      user.save((err) => {
+      user.save((err) => { //if user does not exist this function saves the user to the database.
         if (err) { return next(err) }
         req.logIn(user, (err) => {
           if (err) {

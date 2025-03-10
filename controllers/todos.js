@@ -1,11 +1,11 @@
-const Todo = require('../models/Todo')
+const Todo = require('../models/Todo') //imports Todo model from the /models/Todo route
 
 module.exports = {
     getTodos: async (req,res)=>{
         console.log(req.user)
         try{
             const todoItems = await Todo.find({userId:req.user.id})
-            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false})
+            const itemsLeft = await Todo.countDocuments({userId:req.user.id,completed: false})//count documents with the property of false
             res.render('todos.ejs', {todos: todoItems, left: itemsLeft, user: req.user})
         }catch(err){
             console.log(err)
