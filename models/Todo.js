@@ -1,6 +1,6 @@
 const mongoose = require('mongoose') //import mongoose module, mongoose allows you to createa a template for the data and data types that will be stored in your DB
-
-const TodoSchema = new mongoose.Schema({
+                                    //mongoose helps us create a 
+const TodoSchema = new mongoose.Schema({ //this is the model that sets up the schema. 
   todo: {
     type: String,
     required: true, //this key/value pair sets a user required field.
